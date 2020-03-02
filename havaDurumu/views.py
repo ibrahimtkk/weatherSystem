@@ -7,15 +7,11 @@ from django.http import HttpResponse
 import json, os, time, datetime, urllib.request
 
 
-# Create your views here.
-
-
 def login(request):
 	global loginID
 	userDB = sql.connect('users.sqlite3')
 	imUser = userDB.cursor()
 	imUser.execute("CREATE TABLE IF NOT EXISTS Users (username, password, userID)")
-
 	imUser.execute("SELECT * FROM Users WHERE username=? AND password=?", ('root', 'toor'))
 	rows = imUser.fetchall()
 	if (rows==[]):
@@ -23,21 +19,13 @@ def login(request):
 		userDB.commit()
 
 	userDB.close()
-		
-	
-	#a = 0
-	#if a==0:
-	#	return HttpResponseRedirect("havaDurumu/login.html")
-	#elif a==1:
-	#	return HttpResponseRedirect("havaDurumu/standartHome.html")
 	return render(request, 'havaDurumu/login.html', {})
+
 
 def paravanAjax(request):
 	global imLocation, imUser, locationDB, userDB, geolocator, USERNAME
-	#data = request.POST.get("dataKom")
-	#data = data.split(':')
+
 	loginID, loginPW = globalLoginID, globalLoginPW
-	print("çççççççççç:", globalLoginID, globalLoginPW)
 	USERNAME = loginID
 
 	locationDB = sql.connect('location.sqlite3')
@@ -53,40 +41,6 @@ def paravanAjax(request):
 	except:
 		print("ilk lokasyon ekle")
 
-	print("---loginID:", loginID)
-	geolocator = Nominatim(user_agent="havaDurumu")
-	if loginID == 'root' and loginPW == 'toor':
-		print("rootta")
-		return render(request, 'havaDurumu/rootHome.html', {'rows': data})
-	else:
-		print("rootta daeğil")
-		return render(request, 'havaDurumu/standartHome.html', {'rows': data})
-	#return render(request, 'havaDurumu/rootHome.html', {'rows': data})
-
-def redirect(request):
-	a = 0
-	global imLocation, imUser, locationDB, userDB, geolocator, USERNAME
-	loginID = request.POST.get('loginID')
-	loginPW = request.POST.get('loginPW')
-	USERNAME = loginID
-	print("**********************")
-	#locationDB = sql.connect('location.sqlite')
-	#imLocation = locationDB.cursor()
-
-	locationDB = sql.connect('location.sqlite3')
-	imLocation = locationDB.cursor()
-
-	try:
-		imLocation.execute("CREATE TABLE IF NOT EXISTS Locations (location, lat, lng, locationID)")
-		imLocation.execute("SELECT * FROM Locations")
-		rows = imLocation.fetchall()
-		data = []
-		for row in rows:
-			data.append(row[0])
-	except:
-		print("ilk lokasyon ekle")
-
-	print("---loginID:", loginID)
 	geolocator = Nominatim(user_agent="havaDurumu")
 	if loginID == 'root' and loginPW == 'toor':
 		return render(request, 'havaDurumu/rootHome.html', {'rows': data})
@@ -100,14 +54,6 @@ def standartHome(request):
 	return render(request, 'havaDurumu/standartHome.html', {})
 
 
-
-def addRootToDB(request):
-	userDB = sql.connect('users.sqlite3')
-	imUser = userDB.cursor()
-	imUser.execute("CREATE TABLE IF NOT EXISTS Users (username, password, userID)")
-	imUser.execute("INSERT INTO Users VALUES ('root', 'toor', '0')")
-	userDB.commit()
-	userDB.close()
 
 
 
@@ -129,20 +75,14 @@ def loginToAjax(request):
 	data = gonderilecekVeri.split(':')
 	global globalLoginID, globalLoginPW
 	loginID, loginPW = data[0], data[1]
-	print("EEEEEEEEEE",loginID, loginPW)
 	userDB = sql.connect('users.sqlite3')
 	imUser = userDB.cursor()
 
 	globalLoginID, globalLoginPW = loginID, loginPW
 
-	print('loginToAjax: ', loginID, loginPW)
 
 	imUser.execute("SELECT * FROM Users WHERE username=? and password=?", (loginID, loginPW))
 	rows = imUser.fetchall()
-	print("rowssss: ", rows, loginID, loginPW)
-
-	#if (rows == [] and loginID=='root' and loginPW=='toor'):
-	#	addRootToDB(request)
 
 
 	if rows == []:
@@ -161,19 +101,6 @@ def loginToAjax(request):
 			data = 'havaDurumu/standartHome.html'
 			data = json.dumps(data)
 			return HttpResponse(data, content_type='application/json')
-			#return render(request, 'havaDurumu/standartHome.html', {'rows': data})
-
-	#if request.is_ajax():
-	#	deger = addLocationToDB(request)
-	#	if deger == 'varmis':
-	#		data = 'BoyleBirYerVarmis'
-	#		data = json.dumps(data)
-	#		return HttpResponse(data, content_type='application/json')
-	#	else:
-	#		data = 'YeniLocationEklendi'
-	#		data = json.dumps(data)
-	#		return HttpResponse(data, content_type='application/json')
-
 
 
 
@@ -345,10 +272,11 @@ def locationListFromAjax(request):
 
 	if request.is_ajax() and request.POST:
 		data = {}
-		return HttpResponse(data, content_type='application/json')
+		
 	else:
 		print("else location update")
-		return HttpResponse(data, content_type='application/json')
+	
+	return HttpResponse(data, content_type='application/json')
 
 @csrf_protect
 def locationListToAjax(request):
@@ -356,18 +284,11 @@ def locationListToAjax(request):
 		deger = listLocationToDB(request)
 		if deger == 'HicLocationYok':
 			data = 'HicLocationYok'
-			data = json.dumps(data)
-			return HttpResponse(data, content_type='application/json')
 		else:
 			data = deger
-			data = json.dumps(data)
-			return HttpResponse(data, content_type='application/json')
 
-
-
-
-
-
+		data = json.dumps(data)
+		return HttpResponse(data, content_type='application/json')
 
 
 
@@ -406,10 +327,11 @@ def userAddFromAjax(request):
 
 	if request.is_ajax() and request.POST:
 		data = {}
-		return HttpResponse(data, content_type='application/json')
+		
 	else:
 		print("else user add")
-		return HttpResponse(data, content_type='application/json')
+	
+	return HttpResponse(data, content_type='application/json')
 
 @csrf_protect
 def userAddToAjax(request):
@@ -417,12 +339,12 @@ def userAddToAjax(request):
 		deger = addUserToDB(request)
 		if deger == 'varmis':
 			data = 'BoyleBiriVarmis'
-			data = json.dumps(data)
-			return HttpResponse(data, content_type='application/json')
+			
 		else:
 			data = 'YeniKullaniciEklendi'
-			data = json.dumps(data)
-			return HttpResponse(data, content_type='application/json')
+		
+		data = json.dumps(data)
+		return HttpResponse(data, content_type='application/json')
 
 
 
@@ -451,10 +373,11 @@ def userRemoveFromAjax(request):
 
 	if request.is_ajax() and request.POST:
 		data = {}
-		return HttpResponse(data, content_type='application/json')
+		
 	else:
 		print("else user remove")
-		return HttpResponse(data, content_type='application/json')
+	
+	return HttpResponse(data, content_type='application/json')
 
 @csrf_protect
 def userRemoveToAjax(request):
@@ -463,18 +386,17 @@ def userRemoveToAjax(request):
 		if gonderilecekVeri == 'root':
 			print('buada')
 			data = 'rootSilinemez'
-			data = json.dumps(data)
-			return HttpResponse(data, content_type='application/json')
+			
 		else:
 			deger = removeUserToDB(request)
 			if deger == 'BoyleBiriYokmus':
 				data = 'BoyleBiriYokmus'
-				data = json.dumps(data)
-				return HttpResponse(data, content_type='application/json')
+				
 			else:
 				data = 'UserSilindi'
-				data = json.dumps(data)
-				return HttpResponse(data, content_type='application/json')
+		
+		data = json.dumps(data)
+		return HttpResponse(data, content_type='application/json')
 
 
 
@@ -512,10 +434,10 @@ def userUpdateFromAjax(request):
 
 	if request.is_ajax() and request.POST:
 		data = {}
-		return HttpResponse(data, content_type='application/json')
 	else:
 		print("else user update")
-		return HttpResponse(data, content_type='application/json')
+	
+	return HttpResponse(data, content_type='application/json')
 
 @csrf_protect
 def userUpdateToAjax(request):
@@ -552,11 +474,11 @@ def userListFromAjax(request):
 	gonderilecekVeri = data
 
 	if request.is_ajax() and request.POST:
-		data = {}
-		return HttpResponse(data, content_type='application/json')
+		data = {}	
 	else:
 		print("else user update")
-		return HttpResponse(data, content_type='application/json')
+	
+	return HttpResponse(data, content_type='application/json')
 
 @csrf_protect
 def userListToAjax(request):
@@ -564,12 +486,11 @@ def userListToAjax(request):
 		deger = listUserToDB(request)
 		if deger == 'HicUserYok':
 			data = 'HicUserYok'
-			data = json.dumps(data)
-			return HttpResponse(data, content_type='application/json')
+			
 		else:
 			data = deger
-			data = json.dumps(data)
-			return HttpResponse(data, content_type='application/json')
+		data = json.dumps(data)
+		return HttpResponse(data, content_type='application/json')
 
 
 
@@ -671,10 +592,10 @@ def weatherFromAjax(request):
 
 	if request.is_ajax() and request.POST:
 		data = {}
-		return HttpResponse(data, content_type='application/json')
 	else:
 		print("else weather add")
-		return HttpResponse(data, content_type='application/json')
+	
+	return HttpResponse(data, content_type='application/json')
 
 
 
@@ -724,11 +645,11 @@ def reportFromAjax(request):
 
 	if request.is_ajax() and request.POST:
 		print(1111111111)
-		data = {}
-		return HttpResponse(data, content_type='application/json')
+		data = {}	
 	else:
 		print("else report add")
-		return HttpResponse(data, content_type='application/json')
+	
+	return HttpResponse(data, content_type='application/json')
 
 
 
@@ -769,10 +690,10 @@ def reportStandartFromAjax(request):
 	if request.is_ajax() and request.POST:
 		print(1111111111)
 		data = {}
-		return HttpResponse(data, content_type='application/json')
 	else:
 		print("else report add")
-		return HttpResponse(data, content_type='application/json')
+	
+	return HttpResponse(data, content_type='application/json')
 
 
 
@@ -788,34 +709,3 @@ def reportStandartToAjax(request):
 	else:
 		print("elseesesssesesese12")
 
-
-
-
-
-
-
-
-#@csrf_protect
-#def locationDelete(request):
-#	print("delete")
-#	return render(request, 'havaDurumu/location_delete.html', {})
-#
-#def locationUpdate(request):
-#	return render(request, 'havaDurumu/location_update.html', {})
-#
-#def locationList(request):
-#	return render(request, 'havaDurumu/location_list.html', {})
-#
-#
-#
-#def userAdd(request):
-#	return render(request, 'havaDurumu/user_add.html', {})
-#
-#def userDelete(request):
-#	return render(request, 'havaDurumu/user_delete.html', {})
-#
-#def userUpdate(request):
-#	return render(request, 'havaDurumu/user_update.html', {})
-#
-#def userList(request):
-#	return render(request, 'havaDurumu/user_list.html', {})#
