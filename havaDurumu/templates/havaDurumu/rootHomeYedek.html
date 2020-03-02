@@ -1,0 +1,616 @@
+<!-- Sayfanın ilkellikten kurtulması için kullanılır. Temel HTML kısmında containerları falan görmek istersek bu satırı
+ yorum satırı yapabilirsin. -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+
+<!-- Jquery kodlarının çalışması için kullanılıyor -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+
+<!-- Tablar ve piller arası geçiş için olmazsa olmaz -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+
+
+<script type="text/javascript">
+    /* Djangoya giden veri */
+    var eklenecekLocation;
+
+		/* Djangodan gelen veri */
+		console.log("create post is working!"); // sanity check
+		$(document).ready(function(){
+            $(document).on('click', '.buttonSuccessLocationAdd', function(e){
+            	e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    //alert("gondermeden onceki: "+buttonSuccess);
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/sehir_ekle_from_ajax/",
+                        data: {
+                            "data": $("#sehirEkleText").val()
+                        }
+                    });
+
+
+                    /* djangodan gelen veri */
+                    $.get("/sehir_ekle_to_ajax/", function(data){
+                    	console.log(data);
+                    	if (data=="YeniLocationEklendi"){
+                    		document.getElementById("uyari").innerHTML = "Yeni location eklendi";
+                    	}
+                    	else{
+                    		document.getElementById("uyari").innerHTML = "Böyle bir location Varmış!";
+                    	}
+                    });
+                }
+            });
+
+            $(document).on('click', '.buttonSuccessLocationRemove', function(e){
+            	e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    //alert("gondermeden onceki: "+buttonSuccess);
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/sehir_sil_from_ajax/",
+                        data: {
+                            "data": $("#sehirSilText").val()
+                        }
+                    });
+
+
+                    /* djangodan gelen veri */
+                    $.get("/sehir_sil_to_ajax/", function(data){
+                    	console.log(data);
+                    	if (data=="LocationSilindi"){
+                    		document.getElementById("uyariSil").innerHTML = "Location silindi";
+                    	}
+                    	else{
+                    		document.getElementById("uyariSil").innerHTML = "Böyle bir location Yokmuş!";
+                    	}
+                    });
+                }
+            });
+
+            $(document).on('click', '.buttonSuccessLocationUpdate', function(e){
+            	e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/sehir_guncelle_from_ajax/",
+                        data: {
+                            "data": $("#eskiSehirGuncelleText").val() + ":" + $("#yeniSehirGuncelleText").val()
+                        }
+                    });
+
+
+                    /* djangodan gelen veri */
+                    $.get("/sehir_guncelle_to_ajax/", function(data){
+                    	console.log(data);
+                    	if (data=="LocationGuncellendi"){
+                    		document.getElementById("uyariGuncelle").innerHTML = "Location guncellendi";
+                    	}
+                    	else{
+                    		document.getElementById("uyariGuncelle").innerHTML = "Böyle bir location Yokmuş!";
+                    	}
+                    });
+                }
+            });
+
+
+            $(document).on('click', '.buttonSuccessLocationList', function(e){
+            	e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/sehir_listele_from_ajax/",
+                        data: {},
+                    });
+
+
+                    /* djangodan gelen veri */
+                    $.get("/sehir_listele_to_ajax/", function(data){
+                    	console.log(data);
+                    	if (data=="HicLocationYok"){
+                    		document.getElementById("uyariListele").innerHTML = "Veritabanı Boş";
+                    	}
+                    	else{
+                    		document.getElementById("uyariListele").innerHTML = data;
+                    	}
+                    });
+                }
+            });
+
+            $(document).on('click', '.buttonSuccessWeather', function(e){
+                e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    //alert("gondermeden onceki: "+buttonSuccess);
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/hava_durumu_from_ajax/",
+                        data: {
+                            "data": $("#weathers").val()
+                        },
+                        //success: function(data){
+                        //    alert("gonderdi: "+ buttonSuccess+ " "+ data);
+                        //}
+                    });
+
+
+                    /* djangodan gelen veri */
+                    $.get("/hava_durumu_to_ajax/", function(data){
+                        console.log(data);
+                        if (data!="LocationVar"){
+                            document.getElementById("uyariHavaDurumu").innerHTML = data;
+                        }
+                        else{
+                            document.getElementById("uyariHavaDurumu").innerHTML = "Böyle bir location Yokmuş!";
+                        }
+                    });
+                }
+            });
+
+            $(document).on('click', '.buttonsuccessreport', function(e){
+                e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    //alert("gondermeden onceki: "+buttonSuccess);
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/rapor_from_ajax/",
+                        data: {
+                            "data": "ibrahim",
+                        },
+                        //success: function(data){
+                        //    alert("gonderdi: "+ buttonSuccess+ " "+ data);
+                        //}
+                    });
+
+                    /* djangodan gelen veri */
+                    $.get("/rapor_to_ajax/", function(data, status){
+                        console.log(status);
+                        if (data!="LocationVar"){
+                            document.getElementById("uyarirapor").innerHTML = data;
+                        }
+                        else{
+                            document.getElementById("uyarirapor").innerHTML = "Böyle bir location Yokmuş!";
+                        }
+                    })
+                }
+            });
+
+
+
+
+
+
+
+            /* ================================== MENU 3 ================================== */
+
+            $(document).on('click', '.buttonSuccessUserAdd', function(e){
+            	e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    //alert("gondermeden onceki: "+buttonSuccess);
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/kullanici_ekle_from_ajax/",
+                        data: {
+                            "data": $("#kullaniciIDText").val() + ":" + $("#kullaniciPWText").val()
+                        },
+                        //success: function(data){
+                        //    alert("gonderdi: "+ buttonSuccess+ " "+ data);
+                        //}
+                    });
+
+
+                    /* djangodan gelen veri */
+                    $.get("/kullanici_ekle_to_ajax/", function(data){
+                    	console.log(data);
+                    	if (data=="YeniKullaniciEklendi"){
+                    		document.getElementById("uyariUser").innerHTML = "Yeni user eklendi";
+                    	}
+                    	else{
+                    		document.getElementById("uyariUser").innerHTML = "Böyle bir user Varmış!";
+                    	}
+                    });
+                }
+            });
+
+            $(document).on('click', '.buttonSuccessUserRemove', function(e){
+            	e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    //alert("gondermeden onceki: "+buttonSuccess);
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/kullanici_sil_from_ajax/",
+                        data: {
+                            "data": $("#kullaniciSilText").val()
+                        },
+                        //success: function(data){
+                        //    alert("gonderdi: "+ buttonSuccess+ " "+ data);
+                        //}
+                    });
+
+
+                    /* djangodan gelen veri */
+                    $.get("/kullanici_sil_to_ajax/", function(data){
+                    	console.log(data);
+                    	if (data=="rootSilinemez"){
+                            document.getElementById("uyariSilUser").innerHTML = "ROOT SİLİNEMEZ";
+                        }
+                        else if (data=="UserSilindi"){
+                    		document.getElementById("uyariSilUser").innerHTML = "User silindi";
+                    	}
+                    	else{
+                    		document.getElementById("uyariSilUser").innerHTML = "Böyle bir user Yokmuş!";
+                    	}
+                    });
+                }
+            });
+
+            $(document).on('click', '.buttonSuccessUserUpdate', function(e){
+            	e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/kullanici_guncelle_from_ajax/",
+                        data: {
+                            "data": $("#eskiKullaniciIDGuncelleText").val() + ":" + $("#yeniKullaniciPWGuncelleText").val()
+                        },
+                        //success: function(data){
+                        //    alert("gonderdi: "+ buttonSuccess+ " "+ data);
+                        //}
+                    });
+
+
+                    /* djangodan gelen veri */
+                    $.get("/kullanici_guncelle_to_ajax/", function(data){
+                    	console.log(data);
+                    	if (data=="UserGuncellendi"){
+                    		document.getElementById("uyariGuncelleUser").innerHTML = "User guncellendi";
+                    	}
+                    	else{
+                    		document.getElementById("uyariGuncelleUser").innerHTML = "Böyle bir user Yokmuş!";
+                    	}
+                    });
+                }
+            });
+
+
+            $(document).on('click', '.buttonSuccessUserList', function(e){
+            	e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/kullanici_listele_from_ajax/",
+                        data: {},
+                    });
+
+
+                    /* djangodan gelen veri */
+                    $.get("/kullanici_listele_to_ajax/", function(data){
+                    	console.log(data);
+                    	if (data=="HicLocationYok"){
+                    		document.getElementById("uyariListeleUser").innerHTML = "Veritabanı Boş";
+                    	}
+                    	else{
+                    		document.getElementById("uyariListeleUser").innerHTML = data;
+                    	}
+                    });
+                }
+            });
+
+
+
+
+            // CSRF code
+            function getCookie(name) {
+                var cookieValue = null;
+                var i = 0;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (i; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            }); 
+        });
+
+	
+</script>
+
+
+
+
+
+
+
+
+<div class="tab-pane" id="h2h">
+	{%  csrf_token %}
+	<ul class="nav nav-tabs">
+        <li class="active">
+            <a data-toggle="tab" href="#lokasyon">Analiz</a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#kullanici">Kullanıcı</a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#havaDurumu">Hava Durumu</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        
+    	<!-- Lokasyon Icin -->
+
+
+        <div class="tab-pane fade active in" id="lokasyon">
+        	{%  csrf_token %}
+            <ul class="nav nav-pills">
+                <li class="active">
+                    <a data-toggle="tab" href="#lokasyonEkle">Lokasyon Ekle</a>
+                </li>
+                
+                <li>
+                    <a data-toggle="tab" href="#lokasyonSil">Lokasyon Sil</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#lokasyonGuncelle">Lokasyon Guncelle</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#lokasyonListele">Lokasyon Listele</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+
+
+            	<div class="tab-pane fade active in" id="lokasyonEkle" name="lokasyonEkle">
+                    <fieldset>
+                        <form method=POST>{%  csrf_token %}
+							<label for="sehirEkle">Şehir:</label>
+							<input type="text" id="sehirEkleText" name="sehirEkleText"><br><br>
+							<input class="buttonSuccessLocationAdd" type="submit" id="sehirEkle" value="Şehir Ekle" />
+						</form>
+                    </fieldset>
+                    <p type="text" id="uyari" name="uyari" >
+            
+                </div>
+
+
+                <div class="tab-pane fade " id="lokasyonSil" name="lokasyonSil">
+                    <fieldset>
+                        <form method=POST>{%  csrf_token %}
+							<label for="sehirSil">Şehir:</label>
+							<input type="text" id="sehirSilText" name="sehirSilText"><br><br>
+							<input class="buttonSuccessLocationRemove" type="submit" id="sehirSil" value="Şehir Sil" />
+						</form>
+                    </fieldset>
+                    <p type="text" id="uyariSil" name="uyariSil" >
+            
+                </div>
+
+                <div class="tab-pane fade " id="lokasyonGuncelle" name="lokasyonGuncelle">
+                    <fieldset>
+                        <form method=POST>{%  csrf_token %}
+							<label for="eskiSehir">Silinecek Şehir:</label>
+							<input type="text" id="eskiSehirGuncelleText" name="eskiSehirGuncelleText"><br><br>
+
+							<label for="yeniSehir">Eklenecek Şehir:</label>
+							<input type="text" id="yeniSehirGuncelleText" name="yeniSehirGuncelleText"><br><br>
+
+
+							<input class="buttonSuccessLocationUpdate" type="submit" id="sehirGuncelle" value="Şehir Guncelle" />
+						</form>
+                    </fieldset>
+                    <p type="text" id="uyariGuncelle" name="uyariGuncelle" >
+                </div>
+
+                <div class="tab-pane fade " id="lokasyonListele" name="lokasyonListele">
+                    <fieldset>
+                        <form method=POST>{%  csrf_token %}
+							<label for="sehirList">Lokasyonlar:</label><br>
+
+
+							<input class="buttonSuccessLocationList" type="submit" id="sehirListele" value="Şehir Listele" />
+						</form>
+                    </fieldset>
+                    <p type="text" id="uyariListele" name="uyariListele" >
+                </div>
+
+
+               
+            </div>
+        </div>
+
+
+
+
+        <!-- Kullanici Icin -->
+
+        <div class="tab-pane fade" id="kullanici">
+            <ul class="nav nav-pills">
+                <li class="active">
+                    <a data-toggle="tab" href="#kullaniciEkle">Kullanıcı Ekle</a>
+                </li>
+            
+                
+                <li>
+                    <a data-toggle="tab" href="#kullaniciSil">Kullanıcı Sil</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#kullaniciGuncelle">Kullanici Guncelle</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#kullaniciListele">Kullanici Listele</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+
+
+            	
+            	
+                <div class="tab-pane fade active in" id="kullaniciEkle" name="kullaniciEkle">
+                    <form method=POST>{%  csrf_token %}
+                    	<fieldset>
+							<label for="kullaniciID">ID:</label>
+							<input type="text" id="kullaniciIDText" name="kullaniciIDText"><br><br>
+
+							<label for="kullaniciPW">PW:</label>
+							<input type="text" id="kullaniciPWText" name="kullaniciPWText"><br><br>
+
+
+							<input class="buttonSuccessUserAdd" type="submit" id="kullaniciEkle" value="Kullanici Ekle" />
+                    	</fieldset>
+					</form>
+                    <p type="text" id="uyariUser" name="uyariUser" >
+                </div>
+
+
+                <div class="tab-pane fade" id="kullaniciSil" name="kullaniciSil">
+                    <form method="POST">{%  csrf_token %}
+                        <fieldset>
+							<label for="kullaniciSil">ID:</label>
+							<input type="text" id="kullaniciSilText" name="kullaniciSilText"><br><br>
+							<input class="buttonSuccessUserRemove" type="submit" id="kullaniciSil" value="Kul Sil" />
+							
+                        </fieldset>
+                    </form>
+                    <p type="text" id="uyariSilUser" name="uyariSilUser" >
+                </div>
+
+                
+
+
+                <div class="tab-pane fade" id="kullaniciGuncelle" name="kullaniciGuncelle">
+                    <form method="POST">{%  csrf_token %}
+                        <fieldset>
+							<label for="eskiKullaniciID">ID:</label>
+							<input type="text" id="eskiKullaniciIDGuncelleText" name="eskiKullaniciIDGuncelleText"><br><br>
+
+							<label for="yenikullaniciPW">Yeni PW:</label>
+							<input type="text" id="yeniKullaniciPWGuncelleText" name="yeniKullaniciPWGuncelleText"><br><br>
+
+
+							<input class="buttonSuccessUserUpdate" type="submit" id="kullaniciGuncelle" value="Kullanici Guncelle" />
+							
+                        </fieldset>
+                        <p type="text" id="uyariGuncelleUser" name="uyariGuncelleUser" >
+                    </form>
+                </div>
+
+
+
+                
+
+                <div class="tab-pane fade" id="kullaniciListele" name="kullaniciListele"> 
+                    <form method="POST">{%  csrf_token %}
+                        <fieldset>
+                        	<label for="kullaniciList">Kullanicilar:</label><br>
+
+							<input class="buttonSuccessUserList" type="submit" id="kullaniciListele" value="Şehir Listele" />
+						</fieldset>
+                    </form>
+                    <p type="text" id="uyariListeleUser" name="uyariListeleUser" >
+                </div>
+            </div>
+        </div>
+    
+
+
+
+
+        <div class="tab-pane fade" id="havaDurumu">
+            <ul class="nav nav-pills">
+                <li class="active">
+                    <a data-toggle="tab" href="#havadurumusorgularoot">Hava Durumu</a>
+                </li>
+            
+                
+                <li>
+                    <a data-toggle="tab" href="#raporroot">Rapor</a>
+                </li>
+                
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade active in" id="havadurumusorgularoot" name="havadurumusorgularoot">
+                    <form method="POST">{%  csrf_token %}
+                        <fieldset>
+                            <br><br>
+                            <label for="weathers">Şehir Seçin:</label>
+
+                                <select id="weathers">
+                                    {% for row in rows %}
+                                        <option value='{{ row }}'>'{{ row }}'</option>
+                                    {% endfor %}
+
+                                    <!--
+                                        <option value="izmir">İzmir</option>
+                                        <option value="istanbul">İstanbul</option>
+                                        <option value="ankara">Ankara</option>
+                                    -->
+                                </select>
+                                <br>
+                            <input class="buttonSuccessWeather" type="submit" id="havaDurumuSorgula" value="Hava Durumu Sorgula" /><br>
+
+                            <p type="text" id="uyariHavaDurumu" name="uyariHavaDurumu" ></p>
+                        </fieldset>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="raporroot" name="raporroot"> 
+                    <form method="POST">{% csrf_token %}
+                        <fieldset>
+                            <label for="rapor">Rapor:</label><br>
+
+                            <input class="buttonsuccessreport" type="submit" id="raporrootbutton" value="Rapor" />
+                        </fieldset>
+                    </form>
+                    <p type="text" id="uyarirapor" name="uyarirapor" >
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <form action="/" method="POST">{% csrf_token %}
+        <input class="buttonSuccessExit" type="submit" id="exit" value="Çıkış" />
+    </form>
+</div>

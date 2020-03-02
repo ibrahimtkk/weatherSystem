@@ -1,0 +1,140 @@
+<!-- Sayfanın ilkellikten kurtulması için kullanılır. Temel HTML kısmında containerları falan görmek istersek bu satırı
+ yorum satırı yapabilirsin. -->
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+<!-- Jquery kodlarının çalışması için kullanılıyor -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+
+        var loginIDD, loginPWW;
+
+        $(document).on('click', '.buttonSuccessLogin', function(e){
+                e.preventDefault();
+                var buttonSuccess = $(this).val();
+                if(buttonSuccess){
+                    //alert("gondermeden onceki: "+buttonSuccess);
+                    /* tiklanan veri django kismina yollandi */
+                    $.ajax({
+                        type:"POST",
+                        url:"/giris_from_ajax/",
+                        data: {
+                            "data": $("#loginID").val() + ':' + $("#loginPW").val()
+                        },
+                        success: function(data){
+                            console.log("gonder basari");
+                            loginIDD = $("#loginID").val();
+                            loginPWW = $("#loginPW").val();
+                            console.log("gonderdi "+loginIDD)
+                        },
+                        async: true
+                    });
+
+                    //$.ajax({
+                    //    type: 'GET',
+                    //    url: "/giris_to_ajax/",
+                    //    //data: { name: name, lastname: lastname, firstname: firstname},
+                    //    dataType: 'html',
+                    //    context: document.body,
+                    //    async: false,
+                    //    success: function(data) {
+                    //        alert(data);
+                    //        //window.location = 'redirect';
+                    //        //if(name == 'archie') {
+                    //        //     //you can use it
+                    //        //}
+                    //    }
+                    //});
+
+                    //$.ajax({
+                    //    type:"POST",
+                    //    url:"/paravanAjax/",
+                    //    data: {
+                    //        "data": loginIDD + ':' + loginPWW
+                    //    },
+                    //    success: function(data){
+                    //        alert("gonderdi: "+ data);
+                    //    }
+                    //});
+
+                    /* djangodan gelen veri */
+                    $.get("/giris_to_ajax/", function(data, status){
+                        console.log(status);
+                        if (data=="Böyle Bir Kullanici Yok"){
+                            document.getElementById("uyariLogin").innerHTML = "<span style='color: red;'>Böyle Bir Kullanıcı Yok!</span>";
+                        }
+                        else{
+                            $.ajax({
+                                type:"POST",
+                                url:"/paravanAjax/",
+                                data: {
+                                    "dataKom": data+':'+loginIDD+':'+loginPWW
+                                },
+                                success: function(data){
+                                    loginIDD = $("#loginID").val();
+                                    loginPWW = $("#loginPW").val();
+                                    console.log("aldıii "+loginIDD+ ' '+ loginPWW);
+                                    window.location = 'redirect';
+                                },
+                                async: true
+                            });
+                        }
+                    })
+                }
+            });
+
+
+
+
+            // CSRF code
+            function getCookie(name) {
+                var cookieValue = null;
+                var i = 0;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (i; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            }); 
+        });
+</script>
+
+
+
+
+<form method=POST>{%  csrf_token %}
+<!--<form method=POST>{%  csrf_token %}-->
+    <div class="row" id="loggin">
+    	<label for="loginID">ID:</label>
+    	<input class="loginID" type="text" id="loginID" name="loginID"><br><br>
+    	<label for="loginPW">PW: </label>
+    	<input class="loginPW" type="text" id="loginPW" name="loginPW"><br><br>
+    	<input class="buttonSuccessLogin" type="submit" id="loginButton" value="Giriş" />
+        <!--<input  type="submit" id="loginButton" value="Giriş" />-->
+    </div>
+    <p type="text" id="uyariLogin" name="uyariLogin" >
+</form>
