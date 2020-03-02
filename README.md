@@ -14,7 +14,7 @@ Kullanıcıların kendi kullanıcı adı ve parolasıyla giriş yapabildiği ve 
 
 
 
-![Screenshot from 2020-03-01 21-56-58](https://user-images.githubusercontent.com/16546945/75672273-76b7ed00-5c91-11ea-9b1d-15b2d0da115a.png)
+
 
 
 
