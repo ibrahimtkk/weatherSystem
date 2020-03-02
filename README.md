@@ -16,10 +16,12 @@ Kullanıcıların kendi kullanıcı adı ve parolasıyla giriş yapabildiği ve 
 
 ![Screenshot from 2020-03-01 21-56-58](https://user-images.githubusercontent.com/16546945/75672273-76b7ed00-5c91-11ea-9b1d-15b2d0da115a.png)
 
-![Screenshot from 2020-03-01 21-57-31](https://user-images.githubusercontent.com/16546945/75672274-76b7ed00-5c91-11ea-8d7c-68cb574a91e4.png)
+
 
 
 
 
 # Standart User
 ![Screenshot from 2020-03-02 14-18-36](https://user-images.githubusercontent.com/16546945/75672263-73bcfc80-5c91-11ea-9f20-045d1cb6d34a.png)
+
+![Screenshot from 2020-03-01 21-57-31](https://user-images.githubusercontent.com/16546945/75672274-76b7ed00-5c91-11ea-8d7c-68cb574a91e4.png)
